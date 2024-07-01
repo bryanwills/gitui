@@ -57,6 +57,11 @@ enum DiffTarget {
 	WorkingDir,
 }
 
+struct RemoteStatus {
+	has_remote_for_fetch: bool,
+	has_remote_for_push: bool,
+}
+
 pub struct Status {
 	repo: RepoPathRef,
 	visible: bool,
@@ -65,8 +70,8 @@ pub struct Status {
 	index: ChangesComponent,
 	index_wd: ChangesComponent,
 	diff: DiffComponent,
+	remotes: RemoteStatus,
 	git_diff: AsyncDiff,
-	has_remotes: bool,
 	git_state: RepoState,
 	git_status_workdir: AsyncStatus,
 	git_status_stage: AsyncStatus,
@@ -155,7 +160,10 @@ impl Status {
 		Self {
 			queue: env.queue.clone(),
 			visible: true,
-			has_remotes: false,
+			remotes: RemoteStatus {
+				has_remote_for_fetch: false,
+				has_remote_for_push: false,
+			},
 			git_state: RepoState::Clean,
 			focus: Focus::WorkDir,
 			diff_target: DiffTarget::WorkingDir,
@@ -407,9 +415,16 @@ impl Status {
 	}
 
 	fn check_remotes(&mut self) {
-		self.has_remotes =
-			sync::get_default_remote(&self.repo.borrow().clone())
-				.is_ok();
+		self.remotes.has_remote_for_fetch =
+			sync::get_default_remote_for_fetch(
+				&self.repo.borrow().clone(),
+			)
+			.is_ok();
+		self.remotes.has_remote_for_push =
+			sync::get_default_remote_for_push(
+				&self.repo.borrow().clone(),
+			)
+			.is_ok();
 	}
 
 	///
@@ -567,7 +582,7 @@ impl Status {
 	}
 
 	fn fetch(&self) {
-		if self.can_pull() {
+		if self.can_fetch() {
 			self.queue.push(InternalEvent::FetchRemotes);
 		}
 	}
@@ -600,11 +615,12 @@ impl Status {
 			.as_ref()
 			.map_or(true, |state| state.ahead > 0);
 
-		is_ahead && self.has_remotes
+		is_ahead && self.remotes.has_remote_for_push
 	}
 
-	const fn can_pull(&self) -> bool {
-		self.has_remotes && self.git_branch_state.is_some()
+	const fn can_fetch(&self) -> bool {
+		self.remotes.has_remote_for_fetch
+			&& self.git_branch_state.is_some()
 	}
 
 	fn can_abort_merge(&self) -> bool {
@@ -741,12 +757,12 @@ impl Component for Status {
 
 			out.push(CommandInfo::new(
 				strings::commands::status_fetch(&self.key_config),
-				self.can_pull(),
+				self.can_fetch(),
 				!focus_on_diff,
 			));
 			out.push(CommandInfo::new(
 				strings::commands::status_pull(&self.key_config),
-				self.can_pull(),
+				self.can_fetch(),
 				!focus_on_diff,
 			));
 
@@ -868,13 +884,13 @@ impl Component for Status {
 					Ok(EventState::Consumed)
 				} else if key_match(k, self.key_config.keys.fetch)
 					&& !self.is_focus_on_diff()
-					&& self.can_pull()
+					&& self.can_fetch()
 				{
 					self.fetch();
 					Ok(EventState::Consumed)
 				} else if key_match(k, self.key_config.keys.pull)
 					&& !self.is_focus_on_diff()
-					&& self.can_pull()
+					&& self.can_fetch()
 				{
 					self.pull();
 					Ok(EventState::Consumed)

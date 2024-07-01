@@ -1,7 +1,7 @@
 <h1 align="center">
 <img width="300px" src="assets/logo.png" />
 
-[![CI][s0]][l0] [![crates][s1]][l1] ![MIT][s2] [![UNSAFE][s3]][l3] [![ITCH][s4]][l4] [![TWEET][s6]][l6] [![dep_status][s7]][l7]
+[![CI][s0]][l0] [![crates][s1]][l1] ![MIT][s2] [![UNSAFE][s3]][l3] [![TWEET][s6]][l6] [![dep_status][s7]][l7] [![discord][s8]][l8]
 
 </h1>
 
@@ -12,12 +12,12 @@
 [s2]: https://img.shields.io/badge/license-MIT-blue.svg
 [s3]: https://img.shields.io/badge/unsafe-forbidden-success.svg
 [l3]: https://github.com/rust-secure-code/safety-dance/
-[s4]: https://img.shields.io/badge/itch.io-ok-green
-[l4]: https://extrawurst.itch.io/gitui
 [s6]: https://img.shields.io/twitter/follow/extrawurst?label=follow&style=social
 [l6]: https://twitter.com/intent/follow?screen_name=extrawurst
 [s7]: https://deps.rs/repo/github/extrawurst/gitui/status.svg
 [l7]: https://deps.rs/repo/github/extrawurst/gitui
+[s8]: https://img.shields.io/discord/1176858176897953872
+[l8]: https://discord.gg/rQNeEnMhus
 
 <h5 align="center">GitUI provides you with the comfort of a git GUI but right in your terminal</h1>
 
@@ -84,7 +84,6 @@ These are the high level goals before calling out `1.0`:
 ## 5. <a name="limitations"></a> Known Limitations <small><sup>[Top ▲](#table-of-contents)</sup></small>
 
 - no sparse repo support (see [#1226](https://github.com/extrawurst/gitui/issues/1226))
-- no support for SSH signing yet (see [#1149](https://github.com/extrawurst/gitui/issues/1149))
 - no git-lfs support (see [#1089](https://github.com/extrawurst/gitui/discussions/1089))
 - *credential.helper* for https needs to be **explicitly** configured (see [#800](https://github.com/extrawurst/gitui/issues/800))
 
@@ -205,7 +204,8 @@ All contain a single binary file
 
 #### macOS
 
-- gitui-mac.tar.gz (intel Mac, uses Rosetta on Apple silicon, single binary)
+- gitui-mac.tar.gz (arm64)
+- gitui-mac-x86.tar.gz (intel x86)
 
 #### Windows
 

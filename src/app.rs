@@ -482,13 +482,13 @@ impl App {
 			pull_popup,
 			fetch_popup,
 			tag_commit_popup,
+			reset_popup,
 			create_branch_popup,
 			rename_branch_popup,
 			select_branch_popup,
 			revision_files_popup,
 			submodule_popup,
 			tags_popup,
-			reset_popup,
 			options_popup,
 			help_popup,
 			revlog,
@@ -1109,7 +1109,8 @@ impl App {
 		let table_area = r; // use entire area to allow drawing the horizontal separator line
 		let text_area = left_right[1];
 
-		let tabs = tab_labels.into_iter().map(Line::from).collect();
+		let tabs: Vec<Line> =
+			tab_labels.into_iter().map(Line::from).collect();
 
 		f.render_widget(
 			Tabs::new(tabs)

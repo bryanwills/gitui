@@ -26,6 +26,14 @@ release-mac: build-release
 	tar -C ./target/release/ -czvf ./release/gitui-mac.tar.gz ./gitui
 	ls -lisah ./release/gitui-mac.tar.gz
 
+release-mac-x86: build-apple-x86-release
+	strip target/x86_64-apple-darwin/release/gitui
+	otool -L target/x86_64-apple-darwin/release/gitui
+	ls -lisah target/x86_64-apple-darwin/release/gitui
+	mkdir -p release
+	tar -C ./target/x86_64-apple-darwin/release/ -czvf ./release/gitui-mac-x86.tar.gz ./gitui
+	ls -lisah ./release/gitui-mac-x86.tar.gz
+
 release-win: build-release
 	mkdir -p release
 	tar -C ./target/release/ -czvf ./release/gitui-win.tar.gz ./gitui.exe
@@ -38,11 +46,17 @@ release-linux-musl: build-linux-musl-release
 	mkdir -p release
 	tar -C ./target/x86_64-unknown-linux-musl/release/ -czvf ./release/gitui-linux-x86_64.tar.gz ./gitui
 
+build-apple-x86-debug:
+	cargo build --target=x86_64-apple-darwin
+
+build-apple-x86-release:
+	cargo build --release --target=x86_64-apple-darwin --locked
+
 build-linux-musl-debug:
 	cargo build --target=x86_64-unknown-linux-musl
 
 build-linux-musl-release:
-	cargo build --release --target=x86_64-unknown-linux-musl
+	cargo build --release --target=x86_64-unknown-linux-musl --locked
 
 test-linux-musl:
 	cargo test --workspace --target=x86_64-unknown-linux-musl
@@ -64,9 +78,9 @@ build-linux-arm-debug:
 	cargo build --target=arm-unknown-linux-gnueabihf
 
 build-linux-arm-release:
-	cargo build --release --target=aarch64-unknown-linux-gnu
-	cargo build --release --target=armv7-unknown-linux-gnueabihf
-	cargo build --release --target=arm-unknown-linux-gnueabihf
+	cargo build --release --target=aarch64-unknown-linux-gnu --locked
+	cargo build --release --target=armv7-unknown-linux-gnueabihf --locked
+	cargo build --release --target=arm-unknown-linux-gnueabihf --locked
 
 test:
 	cargo test --workspace
